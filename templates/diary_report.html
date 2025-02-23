@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Diary Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1, h2 { text-align: center; }
+    .report-section { margin-bottom: 40px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>Diary Report</h1>
+
+  <div class="report-section">
+    <h2>Weekly Report</h2>
+    {% for week, data in weekly_report.items() %}
+      <h3>Week {{ week }} - Total Work Time: {{ (data.total_minutes/60)|round(2) }} hours</h3>
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Work Minutes</th>
+          <th>Diary Entries</th>
+        </tr>
+        {% for date, info in data.dates.items() %}
+          <tr>
+            <td>{{ date }}</td>
+            <td>{{ info.minutes }}</td>
+            <td>
+              {% for entry in info.notes %}
+                <div><strong>{{ entry.time }}</strong> - {{ entry.note }}</div>
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endfor %}
+  </div>
+
+  <div class="report-section">
+    <h2>Monthly Report</h2>
+    {% for month, data in monthly_report.items() %}
+      <h3>{{ month }} - Total Work Time: {{ (data.total_minutes/60)|round(2) }} hours</h3>
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Work Minutes</th>
+          <th>Diary Entries</th>
+        </tr>
+        {% for date, info in data.dates.items() %}
+          <tr>
+            <td>{{ date }}</td>
+            <td>{{ info.minutes }}</td>
+            <td>
+              {% for entry in info.notes %}
+                <div><strong>{{ entry.time }}</strong> - {{ entry.note }}</div>
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endfor %}
+  </div>
+  
+  <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+</body>
+</html>

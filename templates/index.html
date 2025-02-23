@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        h1, h2 { color: #2c3e50; text-align: center; }
+        .flex-time { text-align: center; font-size: 1.2em; margin: 10px 0; padding: 10px; background: #ecf0f1; border-radius: 8px; }
+        .button-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin: 20px 0; }
+        .button { padding: 12px 20px; font-size: 1em; border: none; border-radius: 5px; cursor: pointer; transition: background 0.3s, transform 0.1s; }
+        .button:hover { transform: scale(1.05); }
+        .toggle-btn { background: #27ae60; color: white; }
+        .toggle-btn.out { background: #c0392b; }
+        .diary-btn { background: #8e44ad; color: white; }
+        .delete-btn { background: #e74c3c; color: white; padding: 5px 10px; }
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: center; }
+        th { background: #34495e; color: white; text-transform: uppercase; font-size: 0.9em; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        tr:hover { background: #ecf0f1; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .flash { text-align: center; padding: 10px; margin: 10px 0; border-radius: 5px; background: #2ecc71; color: white; }
+        .diary-form { margin: 20px 0; text-align: center; }
+        .diary-form input[type="text"] { padding: 8px; width: 70%; max-width: 300px; border-radius: 5px; border: 1px solid #ddd; }
+        .diary-table { margin-top: 20px; }
+        .weekly-flex { font-weight: bold; color: #2c3e50; }
+        @media (max-width: 600px) {
+            .button-container { flex-direction: column; }
+            .button { width: 100%; }
+            th, td { font-size: 0.9em; }
+            .diary-form input[type="text"] { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header style="text-align: center; margin-bottom: 20px;">
+        <h2>Welcome, {{ username }}!</h2>
+    </header>
+    <h1>Time Manager</h1>
+    <div class="flex-time">Total Flex Time: {{ total_flex }} minutes</div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class="button-container">
+        <form method="POST" action="{{ url_for('toggle_check') }}">
+            <button type="submit" class="button toggle-btn {% if is_checked_in %}out{% endif %}">
+                {{ 'Check Out' if is_checked_in else 'Check In' }}
+            </button>
+        </form>
+        <form method="GET" action="{{ url_for('logout') }}">
+            <button type="submit" class="button">Logout</button>
+        </form>
+    </div>
+    <div class="diary-form">
+        {% if active_diary %}
+             <p>Current Activity: <strong>{{ active_diary[2] }}</strong> (Started at {{ active_diary[1] }})</p>
+             <form method="POST" action="{{ url_for('diary_deactivate') }}">
+                 <button type="submit" class="button diary-btn">Deactivate Activity</button>
+             </form>
+        {% else %}
+             <form method="POST" action="{{ url_for('diary_activate') }}">
+                 <input type="text" name="note" placeholder="Enter activity (e.g. Coding)" required>
+                 <button type="submit" class="button diary-btn">Activate Activity</button>
+             </form>
+        {% endif %}
+    </div>
+    
+    <p><a href="{{ url_for('add_day') }}">Add Past Entry</a> | <a href="{{ url_for('diary_report') }}">View Diary Report</a></p>
+    <h2>Time Logs</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Work Time (min)</th>
+            <th>Actions</th>
+        </tr>
+        {% for log in logs %}
+        <tr>
+            <td>
+                {{ log[1] }}
+                {% if loop.first or logs[loop.index0 - 1][1] != log[1] %}
+                    <span class="weekly-flex"> (Week {{ log[5] }}: {{ weekly_hours.get(log[5], 0) }} min, Flex: {{ weekly_flex.get(log[5], 0) }} min)</span>
+                {% endif %}
+            </td>
+            <td>{{ log[2] or '-' }}</td>
+            <td>{{ log[3] or '-' }}</td>
+            <td>{{ log[4] }}</td>
+            <td>
+                <a href="{{ url_for('edit', id=log[0]) }}">Edit</a> |
+                <form method="POST" action="{{ url_for('delete', id=log[0]) }}" style="display:inline;">
+                    <button type="submit" class="button delete-btn" onclick="return confirm('Are you sure?');">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>Diary</h2>
+    <table class="diary-table">
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Note</th>
+            <th>Edit</th>
+        </tr>
+        {% for entry in diary_entries %}
+        {% for log in logs %}
+            {% if log[0] == entry[1] %}
+            <tr>
+                <td>{{ log[1] }}</td>
+                <td>{{ entry[2] }}</td>
+                <td>{{ entry[3] }}</td>
+                <td><a href="{{ url_for('edit_diary', id=entry[0]) }}">Edit</a></td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        {% endfor %}
+    </table>
+</body>
+</html>

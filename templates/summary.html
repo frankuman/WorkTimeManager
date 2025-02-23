@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Time Summary</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        h1, h2 { color: #2c3e50; text-align: center; }
+        .total { text-align: center; font-size: 1.2em; margin: 20px 0; padding: 10px; background: #ecf0f1; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: center; }
+        th { background: #34495e; color: white; text-transform: uppercase; font-size: 0.9em; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        a { display: block; text-align: center; margin-top: 20px; color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Flex Time Summary</h1>
+    <div class="total">Total Flex Time: {{ total_flex }} minutes</div>
+    <h2>Weekly Breakdown</h2>
+    <table>
+        <tr>
+            <th>Week</th>
+            <th>Hours Worked (min)</th>
+            <th>Flex Time (min)</th>
+        </tr>
+        {% for week, flex in weekly_flex.items() %}
+        <tr>
+            <td>{{ week }}</td>
+            <td>{{ weekly_hours.get(week, 0) }}</td>
+            <td>{{ flex }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>

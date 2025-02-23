@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Time Log</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        h1 { color: #2c3e50; text-align: center; }
+        form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background: #2980b9; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; transition: background 0.3s; }
+        button:hover { background: #3498db; }
+        a { display: block; text-align: center; margin-top: 15px; color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Edit Time Log - {{ log[1] }}</h1>
+    <form method="POST">
+        <label for="check_in">Check In (HH:MM):</label>
+        <input type="text" id="check_in" name="check_in" value="{{ log[2] }}" required>
+        
+        <label for="check_out">Check Out (HH:MM):</label>
+        <input type="text" id="check_out" name="check_out" value="{{ log[3] }}" required>
+        
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>

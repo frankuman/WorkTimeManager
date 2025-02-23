@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Diary Entries</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1 { text-align: center; }
+    .day-group { margin-bottom: 30px; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+    .day-header { cursor: pointer; background: #f2f2f2; padding: 5px; }
+    .entries { display: none; margin-top: 10px; }
+  </style>
+  <script>
+    function toggleEntries(dayId) {
+      var entries = document.getElementById(dayId);
+      if (entries.style.display === "none") {
+        entries.style.display = "block";
+      } else {
+        entries.style.display = "none";
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Diary Entries by Day</h1>
+  {% for date, entries in diary_by_date.items() %}
+    <div class="day-group">
+      <div class="day-header" onclick="toggleEntries('day-{{ loop.index }}')">
+        <h2>{{ date }} (click to toggle)</h2>
+      </div>
+      <div class="entries" id="day-{{ loop.index }}">
+        {% for entry in entries %}
+          <p><strong>{{ entry.time }}</strong> - {{ entry.note }} (<a href="{{ url_for('edit_diary', id=entry.id) }}">Edit</a>)</p>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+  <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+</body>
+</html>
